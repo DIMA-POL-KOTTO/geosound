@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for t in tracks %}
+<div class="tracks">
+    <h3>{{ t[1] }} - {{t[2]}}</h3>
+    <p>Жанр: {{ t[3] }}</p>
+    <p>Настроение: {{ t[4] }}</p>
+</div>
+{% endfor %}
+{% endblock %}
