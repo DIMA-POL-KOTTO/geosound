@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+
+
+<form action="/register" method="POST" class="form-login">
+    <div class="container-login">
+        <p><label>Имя пользователя: </label><input type="text" name="username" value="" required></p>
+        <p><label>Email: </label><input type="text" name="email" value="" required></p>
+        <p><label>Пароль: </label><input type="password" name="password" value="" required></p>
+        <p><label>Повторите пароль: </label><input type="password" name="password2" value="" required></p>
+        <p class="submit-btn"><input type="submit" value="Регистрация"></p>
+        <p><a href="{{ url_for('login') }}">Вход</a></p>
+    </div>
+</form>
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">
+    {{msg}}
+</div>
+{% endfor %}
+{% endblock %}

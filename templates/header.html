@@ -1,0 +1,28 @@
+<header>
+    <div class="container header-content">
+        <a href="{{ url_for('index') }}" class="logo">
+            <div class="logo-icon">GS</div>
+            <span class="logo-text">GeoSound</span>
+        </a>
+        <nav>
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Главная</a>
+            <a href="{{ url_for('map') }} " class="{% if request.endpoint == 'map' %}active{% endif %}">Карта</a>
+            <a href="{{ url_for('playlists') }}" class="{% if request.endpoint == 'playlists' %}active{% endif %}">Плейлисты</a>
+            <a href="{{ url_for('support') }}" class="{% if request.endpoint == 'support' %}active{% endif %}">Поддержка</a>
+        </nav>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" placeholder="Поиск треков...">
+        </div>
+        <div class="profile-bar">
+            {% if session.username %}
+            <a href="{{ url_for('profile') }}" class="profile-icon"><i class="fas fa-user-circle"></i></a>
+            {% else %}
+
+            <a href="{{ url_for('login') }}">Вход</a>
+            <a href="{{ url_for('register') }}">Регистрация</a>
+
+            {% endif %}
+        </div>
+    </div>
+</header>

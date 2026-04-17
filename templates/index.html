@@ -1,11 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% for t in tracks %}
-<div class="tracks">
-    <h3>{{ t[1] }} - {{t[2]}}</h3>
-    <p>Жанр: {{ t[3] }}</p>
-    <p>Настроение: {{ t[4] }}</p>
+
+<div class="content-index">
+    <div class="tracks">
+    {% for t in tracks %}
+        <div class="track-container" onclick="playAudio('{{ url_for('static', filename = 'audio/' + t[6]) }}',
+                                            '{{ url_for('static', filename = 'img/covers/' + t[7]) if t[7] else url_for('static', filename='img/covers/default.jpg') }}', '{{ t[1] }}', '{{ t[2] }}', this, '{{ t[0] }}')">
+            <h3>{{ t[1] }} - {{t[2]}}</h3>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="track-control">
+        <img id='playerCover' src="{{ url_for('static', filename='img/covers/default.jpg') }}">
+        <div class="cover-bottom">
+            <h2 id="playerTitle"></h2>
+        </div>
+        <div class="player-container">
+            <audio id="player" controls style="display: none;">
+                Ваш браузер не поддерживает элемент audio.
+            </audio>
+            <p onclick="openModalForCurrentTrack()" id="addToPlaylistBtn" style="display:none;"><i class="fa-regular fa-circle-xmark"></i></p>
+        </div>
+
+    </div>
 </div>
-{% endfor %}
+
+<div id="playlistsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span onclick="closeModal()">&times;</span>
+        <h3 id="modalTrackTitle"></h3>
+        <form action="/add_track_to_playlist" method="POST">
+            <input type="hidden" name="track_id" id="modalTrackId">
+            <label>Выберите плейлист:</label>
+            <select name="playlist_id" required>
+                {% for p in user_playlists %}
+                <option value="{{ p[0] }}">{{ p[1] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Добавить</button>
+        </form>
+        <div id="playlistsBtns"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/player.js') }}"></script>
+<script src="{{ url_for('static', filename='js/playlists_modal.js') }}"></script>
+
 {% endblock %}

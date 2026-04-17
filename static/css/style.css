@@ -1,0 +1,238 @@
+:root {
+    --main-bg-color: #060b0d;
+    --main-text-color: #e0f2ff;
+    --secondary-bg-color: #0b2852;
+}
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+}
+
+.container {
+
+    margin: auto;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--main-text-color);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    gap: 25px;
+
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--secondary-bg-color);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--main-text-color);
+    font-weight: bold;
+    font-size: 19px;
+}
+
+.logo-text {
+    font-size: 22px;
+    color: var(--main-text-color);
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 25px;
+    font-size: 15px;
+    margin: auto;
+    font-size: 18px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #6b6a6a;
+    transition: 0.2s;
+}
+
+nav a:hover {
+    color: darkgray;
+}
+
+.search-bar {
+    margin-right: 50px;
+    position: relative;
+    flex: 1;
+}
+
+.search-bar input {
+    padding: 8px 10px 8px 35px;
+    border: 1px solid #cccccc;
+    border-radius: 9px;
+    height: 30px;
+    font-size: 16px;
+    font-family: 'Times New Roman', Times, serif;
+    width: 100%;
+    max-width: 400px;
+
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #cccccc;
+}
+
+.profile-bar {
+    display: flex;
+    gap: 20px;
+}
+
+.form-login {
+    margin-top: 200px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 24px;
+}
+
+.container-login {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid darkblue;
+    padding: 20px;
+    border-radius: 8px;
+
+}
+
+.container-login p {
+    display: flex;
+    align-items: center;
+}
+
+.container-login label {
+    width: 200px;
+}
+
+.container-login input {
+    appearance: none;
+    border: 1px solid darkblue;
+    border-radius: 5px;
+    height: 28px;
+    flex: 1;
+    width: 250px;
+    font-family: font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+}
+
+.container-login .submit-btn {
+    width: 50%;
+}
+
+.flash {
+    width: 400px;
+    margin: 10px auto;
+    font-size: 24px;
+    text-align: center;
+}
+
+.flash.success {
+    background-color: lightgreen;
+    color: white;
+}
+
+.flash.error {
+    background-color: red;
+    color: white;
+    align-items: center;
+}
+
+.profile-icon{
+    text-decoration: none;
+    font-size: 28px;
+    color: var(--secondary-bg-color);
+}
+
+nav a.active {
+    color: white;
+    border-bottom: 1px solid white;
+    padding-bottom: 3px;
+}
+
+.content-index {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.tracks {
+    margin: 20px;
+}
+
+.track-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--main-text-color);
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #020608;
+}
+
+.track-container:hover {
+    transition: 0.3s ease-out;
+    background-color: var(--secondary-bg-color);
+    cursor: pointer;
+}
+
+.track-container.active {
+    background-color: var(--secondary-bg-color);
+}
+
+.track-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.track-control img {
+    border: 2px solid white;
+    width: 400px;
+    height: 400px;
+}
+
+.player-container {
+    display: flex;
+    gap: 10px;
+}
+
+#addToPlaylistBtn {
+    transform: rotate(45deg);
+    margin: auto;
+    font-size: 40px;
+    background-color: #020608;
+    border-radius: 50%;
+    color: var(--main-text-color);
+    cursor: pointer;
+}
+
+#addToPlaylistBtn:hover {
+    transition: 0.2s;
+    background-color: var(--secondary-bg-color);
+}

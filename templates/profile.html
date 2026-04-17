@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="{{ url_for('logout') }}">Выйти из профиля</a>
+<h2>Здравствуй, {{ username }}!</h2>
+<button id="createPlaylistBtn">Создать плейлист</button>
+
+{% endblock %}

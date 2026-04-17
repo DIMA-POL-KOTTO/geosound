@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Плейлист: {{ playlist_name }}</h2>
+{% if tracks %}
+    {% for t in tracks %}
+    <div class="tracks">
+        <h3>{{ t[1] }} - {{t[2]}}</h3>
+        <div class="track-control">
+            <button class="play-btn" onclick="playAudio('{{ url_for('static', filename = 'audio/' + t[6]) }}')">
+                ▶
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>В этом плейлисте пока нет треков</p>
+{% endif %}
+<audio id="player" controls style="margin-top: 20px; width: 100%;">
+    Ваш браузер не поддерживает элемент audio.
+</audio>
+
+<script src="{{ url_for('static', filename='js/player.js') }}"></script>
+
+{% endblock %}

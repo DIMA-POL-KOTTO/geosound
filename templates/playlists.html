@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Ваши плейлисты:</h3>
+<div class="playlists">
+    {% for p in playlists %}
+    <h2><a href="{{ url_for('playlist_detail', playlist_id=p[0]) }}">{{ p[1] }}</a></h2>
+    {% endfor %}
+</div>
+<div id="playlistModal" class="modal">
+    <div class="modal-content">
+        <h3>Создать новый плейлист</h3>
+        <form action="/create_playlist" method="POST">
+            <input type="text" name="name" placeholder="Название плейлиста" required>
+            <button type="submit">Создать</button>
+        </form>
+    </div>
+</div>
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">
+    {{msg}}
+</div>
+{% endfor %}
+{% endblock %}
