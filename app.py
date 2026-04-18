@@ -1,5 +1,3 @@
-import os
-import psycopg2
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -189,69 +187,48 @@ def playlist_detail(playlist_id):
 @login_required
 def get_zones():
     dbase = FDataBase()
-    zones_data = dbase.get_zones_by_owner(current_user.get_id()) #(id, owner_id, playlist_id, name, polygon, is_public, created_at)
+    zones_data = dbase.get_zones_by_owner(current_user.get_id())  # массив кортежей
     dbase.close()
     zones = []
     for z in zones_data:
-        p_f = z[4]
-        match = re.search(r'\(\((.*?)\)\)', p_f)
-        if (match):
-            coords_str = match.group(1)
-            points = []
-            for p in coords_str.split(','):
-                lng, lat = map(float, p.strip().split())
-                points.append([lat, lng])
-            zones.append({
-                'id': z[0],
-                'owner_id': z[1],
-                'playlist_id': z[2],
-                'name': z[3],
-                'coords': points,
-                'is_public': z[5],
-                'created_at': z[6]
-            })
+        match = re.search(r'\(\((.*?)\)\)', z[4])
+        coords_str = match.group(1)
+        points = []
+        for point in coords_str.split(','):
+            lng, lat = point.split()
+            points.append([float(lat), float(lng)])
+        zones.append({
+            'id': z[0],
+            'name': z[3],
+            'coords': points,
+            'color': z[7]
+        })
     return jsonify(zones)
 
 
-@app.route('/save_zone', methods=['POST'])
-@login_required
-def save_zone():
-    data = request.get_json()
-    name = data.get('name')
-    coords = data.get('coords')
 
-    points = []
-    for p in coords:
-        points.append(f"{p[1]} {p[0]}")
-    polygon = f"POLYGON(({', '.join(points)}))"
 
-    dbase = FDataBase()
-    dbase.add_zone_for_user(current_user.get_id(), name, polygon)
-    dbase.close()
+# with app.app_context():
+#     dbase = FDataBase()
+#     zones_data = dbase.get_zones_by_owner(5)  # массив кортежей
+#     dbase.close()
+#     zones = []
+#     for z in zones_data:
+#         match = re.search(r'\(\((.*?)\)\)', z[4])
+#         coords_str = match.group(1)
+#         points = []
+#         for point in coords_str.split(','):
+#             lng, lat = point.split()
+#             points.append([float(lat), float(lng)])
+#         zones.append({
+#             'id': z[0],
+#             'name': z[3],
+#             'coords': points
+#         })
+#     print(zones)
 
-    return jsonify({'success': True})
 
-@app.route('/update_zone', methods=['POST'])
-@login_required
-def update_zone():
-    data = request.get_json()
-    zone_id = data.get('zone_id')
-    coords = data.get('coords')
 
-    points = []
-    for p in coords:
-        points.append(f"{p[1]} {p[0]}")
-    polygon = f"POLYGON(({', '.join(points)}))"
-
-    dbase = FDataBase()
-    dbase.update_zone(zone_id, polygon)
-    dbase.close()
-
-    return jsonify({'success': True})
-
-@app.errorhandler(404)
-def pageNotFound(error):
-    return render_template('page404.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

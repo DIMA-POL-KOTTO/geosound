@@ -55,13 +55,13 @@ class FDataBase():
                          'WHERE pt.playlist_id = %s', (playlist_id, ))
         return self.cur.fetchall()
     def get_zones_by_owner(self, owner_id):
-        self.cur.execute("SELECT * FROM zones WHERE owner_id = %s", (owner_id, ))
+        self.cur.execute("SELECT id, owner_id, playlist_id, name, ST_AsText(polygon), is_public, created_at, color "
+                         "FROM zones WHERE owner_id = %s", (owner_id, ))
         return self.cur.fetchall()
-    def add_zone_for_user(self, owner_id, name, polygon):
-        self.cur.execute("INSERT INTO zones(owner_id, name, polygon) "
-                         "VALUES (%s, %s, ST_GeomFromText(%s, 4326))", (owner_id, name, polygon))
+    def add_zone_for_user(self, owner_id, name, polygon, color='#28a745'):
+        self.cur.execute("INSERT INTO zones(owner_id, name, polygon, color) "
+                         "VALUES (%s, %s, ST_GeomFromText(%s, 4326), %s)", (owner_id, name, polygon, color))
         self.conn.commit()
-        return self.cur.fetchone()[0]  # ← возвращаем ID
     def update_zone(self, zone_id, polygon):
         self.cur.execute("UPDATE zones SET polygon = ST_GeomFromText(%s, 4326) "
                          "WHERE id = %s", (polygon, zone_id))
