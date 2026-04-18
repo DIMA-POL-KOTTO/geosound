@@ -205,6 +205,14 @@ def get_zones():
         })
     return jsonify(zones)
 
+@app.route('/add_zone', methods=['POST'])
+@login_required
+def add_zone():
+    data = request.get_json()
+    name = data.get('name')
+    polygon = data.get('polygon')
+    color = data.get('color', '#28a745')
+
 
 
 

@@ -6,23 +6,27 @@
 </div>
 <div class="draw-controls">
     <button id="newZoneBtn">Новая зона</button>
-    <button id="saveZoneBtn">Сохранить зону</button>
-    <button id="cancelEditBtn">Отмена</button>
+    <button id="saveZoneBtn" disabled>Сохранить зону</button>
+    <button id="cancelEditBtn" disabled>Отмена</button>
 </div>
 <div id="info">
     <p>Нажмите "Новая зона", затем рисуйте и редактируйте зону на карте.</p>
 </div>
 <script>
     var myMap;
-
+    var isEditing = false;
+    var currentPolygon = null;
     ymaps.ready(init);
 
     function init() {
+
         myMap = new ymaps.Map("myMap", {
             center: [53.6775, 23.8341],
             zoom: 13,
             controls: ["zoomControl", "fullscreenControl"]
         });
+        document.getElementById('newZoneBtn').onclick = createZone;
+        document.getElementById('cancelEditBtn').onclick = cancelEditing;
         loadZones()
     }
     async function loadZones() {
@@ -52,7 +56,39 @@
         }
     }
 
-    async function addZone() {
+    async function createZone() {
+        if (isEditing){
+            if (confirm('Есть несохраненные зоны. Отменить их?')) {
+                cancelEditing();
+            }
+            else {return;}
+        }
+        if (currentPolygon) {
+            myMap.geoObjects.remove(currentPolygon);
+        }
+        currentPolygon = new ymaps.Polygon([[
+            [53.6775, 23.8341]
+            ]], {
+                hintContent: "Новая зона"
+            }, {
+                fillColor: "#2E16B1",
+                fillOpacity: 0.3,
+                strokeColor: "#180773",
+                strokeWidth: 2,
+                editorDrawingCursor: 'crosshair',
+            }
+        );
+        myMap.geoObjects.add(currentPolygon);
+        currentPolygon.editor.startEditing();
+        currentPolygon.isNewZone = true;
+        isEditing = true;
+        document.getElementById('newZoneBtn').disabled = true;
+        document.getElementById('saveZoneBtn').disabled = false;
+        document.getElementById('cancelEditBtn').disabled = false;
+        document.getElementById('info').innerHTML = '<p>Режим рисования</p>';
+    }
+
+    function cancelEditing() {
 
     }
 
