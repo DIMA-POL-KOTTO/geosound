@@ -205,14 +205,21 @@ def get_zones():
         })
     return jsonify(zones)
 
-@app.route('/add_zone', methods=['POST'])
+@app.route('/save_zone', methods=['POST'])
 @login_required
-def add_zone():
+def save_zone():
     data = request.get_json()
     name = data.get('name')
-    polygon = data.get('polygon')
+    coords = data.get('coords')
     color = data.get('color', '#28a745')
-
+    points = []
+    for p in coords:
+        points.append(f"{p[1]} {p[0]}")
+    polygon = f"POLYGON(({','.join(points)}))"
+    dbase = FDataBase()
+    dbase.add_zone_for_user(current_user.get_id(), name, polygon, color)
+    dbase.close()
+    return jsonify({'success': True})
 
 
 

@@ -26,6 +26,7 @@
             controls: ["zoomControl", "fullscreenControl"]
         });
         document.getElementById('newZoneBtn').onclick = createZone;
+        document.getElementById('saveZoneBtn').onclick = saveZone;
         document.getElementById('cancelEditBtn').onclick = cancelEditing;
         loadZones()
     }
@@ -47,7 +48,6 @@
 
                     });
                     myMap.geoObjects.add(polygon);
-                    console.log('Тута');
                 };
             });
         }
@@ -56,7 +56,7 @@
         }
     }
 
-    async function createZone() {
+    function createZone() {
         if (isEditing){
             if (confirm('Есть несохраненные зоны. Отменить их?')) {
                 cancelEditing();
@@ -88,8 +88,57 @@
         document.getElementById('info').innerHTML = '<p>Режим рисования</p>';
     }
 
-    function cancelEditing() {
+    async function saveZone() {
+        if (!currentPolygon) return;
+        var coords = currentPolygon.geometry.getCoordinates()[0];
+        console.log(coords);
+        if (coords.length < 3) {
+            alert("Зона должна иметь минимум 3 точки!");
+            currentPolygon.editor.startEditing();
+            return;
+        }
+        var zoneName = prompt('Введите название зоны:', 'Новая зона')
+        if (!zoneName) {
+            currentPolygon.editor.startEditing;
+            return;
+        }
+        try {
+            const response = await fetch('/save_zone', {
+                method: "POST",
+                headers: {'Content-Type':'application/json'}, //говорим серверу, что это данные в JSON формате
+                body: JSON.stringify({
+                    name: zoneName,
+                    coords: coords,
+                    color: '#28a745'
+                })
+            });
+            const result = await response.json();
+            if (result.error){
+                alert('Ошибка сервера');
+                currentPolygon.editor.startEditing();
+            }
+        }
+        catch (error){
+            console.error('Ошибка сохранения зоны', error)
+        }
+        document.getElementById('newZoneBtn').disabled = false;
+        document.getElementById('saveZoneBtn').disabled = true;
+        document.getElementById('cancelEditBtn').disabled = true;
+        document.getElementById('info').innerHTML = "<p>Нажмите 'Новая зона', затем рисуйте и редактируйте зону на карте.</p>" + coords;
+    }
 
+    function cancelEditing() {
+        if (currentPolygon) {
+            currentPolygon.editor.stopEditing();
+            myMap.geoObjects.remove(currentPolygon);
+            currentPolygon = null;
+        }
+        isEditing = false;
+
+        document.getElementById('newZoneBtn').disabled = false;
+        document.getElementById('saveZoneBtn').disabled = true;
+        document.getElementById('cancelEditBtn').disabled = true;
+        document.getElementById('info').innerHTML = "<p>Нажмите 'Новая зона', затем рисуйте и редактируйте зону на карте.</p>"
     }
 
 </script>
