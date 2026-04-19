@@ -62,7 +62,7 @@ class FDataBase():
         self.cur.execute("INSERT INTO zones(owner_id, name, polygon, color) "
                          "VALUES (%s, %s, ST_GeomFromText(%s, 4326), %s)", (owner_id, name, polygon, color))
         self.conn.commit()
-    def update_zone(self, zone_id, polygon):
-        self.cur.execute("UPDATE zones SET polygon = ST_GeomFromText(%s, 4326) "
-                         "WHERE id = %s", (polygon, zone_id))
+    def update_zone(self, zone_id, name, polygon, color):
+        self.cur.execute("UPDATE zones SET name = %s, polygon = ST_GeomFromText(%s, 4326), color = %s"
+                         "WHERE id = %s", (name, polygon, color, zone_id))
         self.conn.commit()

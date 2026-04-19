@@ -47,6 +47,10 @@
                         cursor: 'pointer'
 
                     });
+                    polygon.events.add('click', function(e) {
+                       e.stopPropagation(); // чтобы не сработал родитель
+                        editZone(zone.id, zone.name, zone.coords, polygon);
+                    });
                     myMap.geoObjects.add(polygon);
                 };
             });
@@ -90,6 +94,7 @@
 
     async function saveZone() {
         if (!currentPolygon) return;
+
         var coords = currentPolygon.geometry.getCoordinates()[0];
         console.log(coords);
         if (coords.length < 3) {
@@ -97,34 +102,93 @@
             currentPolygon.editor.startEditing();
             return;
         }
-        var zoneName = prompt('Введите название зоны:', 'Новая зона')
-        if (!zoneName) {
-            currentPolygon.editor.startEditing;
-            return;
-        }
-        try {
-            const response = await fetch('/save_zone', {
-                method: "POST",
-                headers: {'Content-Type':'application/json'}, //говорим серверу, что это данные в JSON формате
-                body: JSON.stringify({
-                    name: zoneName,
-                    coords: coords,
-                    color: '#28a745'
-                })
-            });
-            const result = await response.json();
-            if (result.error){
-                alert('Ошибка сервера');
-                currentPolygon.editor.startEditing();
+        if (currentPolygon.isNewZone) {
+            var zoneName = prompt('Введите название зоны:', 'Новая зона')
+            if (!zoneName) {
+                currentPolygon.editor.startEditing;
+                return;
+            }
+            try {
+                const response = await fetch('/save_zone', {
+                    method: "POST",
+                    headers: {'Content-Type':'application/json'}, //говорим серверу, что это данные в JSON формате
+                    body: JSON.stringify({
+                        name: zoneName,
+                        coords: coords,
+                        color: '#28a745'
+                    })
+                });
+                const result = await response.json();
+                if (result.error){
+                    alert('Ошибка сервера');
+                    currentPolygon.editor.startEditing();
+                }
+            }
+            catch (error){
+                console.error('Ошибка сохранения зоны', error)
             }
         }
-        catch (error){
-            console.error('Ошибка сохранения зоны', error)
+        else {
+            var zoneName = prompt('Введите новое название', currentPolygon.editingZoneName)
+            if (!zoneName) {
+                currentPolygon.editor.startEditing;
+                return;
+            }
+            try {
+                const response = await fetch('/update_zone', {
+                    method: "POST",
+                    headers: {'Content-Type':'application/json'}, //говорим серверу, что это данные в JSON формате
+                    body: JSON.stringify({
+                        id: currentPolygon.editingZone,
+                        name: zoneName,
+                        coords: coords,
+                        color: '#28a745'
+                    })
+                });
+                const result = await response.json();
+                if (result.error){
+                    alert('Ошибка сервера');
+                    currentPolygon.editor.startEditing();
+                }
+            }
+            catch (error){
+                console.error('Ошибка изменения зоны', error)
+            }
         }
-        document.getElementById('newZoneBtn').disabled = false;
-        document.getElementById('saveZoneBtn').disabled = true;
-        document.getElementById('cancelEditBtn').disabled = true;
-        document.getElementById('info').innerHTML = "<p>Нажмите 'Новая зона', затем рисуйте и редактируйте зону на карте.</p>" + coords;
+        location.reload();
+
+    }
+
+    function editZone(zoneId, zoneName, zoneCoords, oldPolygon) {
+        if (isEditing) {
+            if (confirm('Есть несохраненные зоны. Отменить их?')) {
+                cancelEditing();
+            }
+            else { return }
+
+        }
+        myMap.geoObjects.remove(oldPolygon);
+        currentPolygon = new ymaps.Polygon([zoneCoords], {
+           hintContent: "Редактирование: " + zoneName
+        }, {
+            fillColor: "#2E16B1",
+            fillOpacity: 0.3,
+            strokeColor: "#180773",
+            strokeWidth: 3,
+            editorDrawingCursor: "crosshair"
+        });
+
+        myMap.geoObjects.add(currentPolygon);
+        currentPolygon.editor.startEditing();
+        currentPolygon.editingZone = zoneId;
+        currentPolygon.editingZoneName = zoneName;
+        currentPolygon.isNewZone = false;
+        isEditing = true;
+        document.getElementById('newZoneBtn').disabled = true;
+        document.getElementById('saveZoneBtn').disabled = false;
+        document.getElementById('cancelEditBtn').disabled = false;
+        document.getElementById('info').innerHTML = '<p>Редактирование зоны "' + zoneName + '"</p>';
+
     }
 
     function cancelEditing() {

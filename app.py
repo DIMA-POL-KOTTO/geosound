@@ -221,6 +221,22 @@ def save_zone():
     dbase.close()
     return jsonify({'success': True})
 
+@app.route('/update_zone', methods=['POST'])
+@login_required
+def update_zones():
+    data = request.get_json()
+    id = data.get('id')
+    name = data.get('name')
+    coords = data.get('coords')
+    color = data.get('color', '#28a745')
+    points = []
+    for p in coords:
+        points.append(f"{p[1]} {p[0]}")
+    polygon = f"POLYGON(({','.join(points)}))"
+    dbase = FDataBase()
+    dbase.update_zone(id, name, polygon, color)
+    dbase.close()
+    return jsonify({'success': True})
 
 
 # with app.app_context():
