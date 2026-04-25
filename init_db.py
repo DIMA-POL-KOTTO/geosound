@@ -58,7 +58,7 @@ class FDataBase():
         self.cur.execute("SELECT id, owner_id, playlist_id, name, ST_AsText(polygon), is_public, created_at, color "
                          "FROM zones WHERE owner_id = %s", (owner_id, ))
         return self.cur.fetchall()
-    def add_zone_for_user(self, owner_id, name, polygon, color='#28a745'):
+    def add_zone_for_user(self, owner_id, name, polygon, color):
         self.cur.execute("INSERT INTO zones(owner_id, name, polygon, color) "
                          "VALUES (%s, %s, ST_GeomFromText(%s, 4326), %s)", (owner_id, name, polygon, color))
         self.conn.commit()

@@ -211,7 +211,7 @@ def save_zone():
     data = request.get_json()
     name = data.get('name')
     coords = data.get('coords')
-    color = data.get('color', '#28a745')
+    color = data.get('color')
     points = []
     for p in coords:
         points.append(f"{p[1]} {p[0]}")
@@ -228,7 +228,7 @@ def update_zones():
     id = data.get('id')
     name = data.get('name')
     coords = data.get('coords')
-    color = data.get('color', '#28a745')
+    color = data.get('color')
     points = []
     for p in coords:
         points.append(f"{p[1]} {p[0]}")

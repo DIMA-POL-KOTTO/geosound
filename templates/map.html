@@ -49,7 +49,7 @@
                     });
                     polygon.events.add('click', function(e) {
                        e.stopPropagation(); // чтобы не сработал родитель
-                        editZone(zone.id, zone.name, zone.coords, polygon);
+                        editZone(zone.id, zone.name, zone.coords, polygon, zone.color);
                     });
                     myMap.geoObjects.add(polygon);
                 };
@@ -142,7 +142,7 @@
                         id: currentPolygon.editingZone,
                         name: zoneName,
                         coords: coords,
-                        color: '#28a745'
+                        color: currentPolygon.editingZoneColor
                     })
                 });
                 const result = await response.json();
@@ -159,7 +159,7 @@
 
     }
 
-    function editZone(zoneId, zoneName, zoneCoords, oldPolygon) {
+    function editZone(zoneId, zoneName, zoneCoords, oldPolygon, zoneColor) {
         if (isEditing) {
             if (confirm('Есть несохраненные зоны. Отменить их?')) {
                 cancelEditing();
@@ -168,12 +168,20 @@
 
         }
         myMap.geoObjects.remove(oldPolygon);
+        var newColor = prompt('Введите цвет для зоны"' + zoneName + '"\nHEX формат (например, #28a745):', zoneColor);
+        if (!newColor) {
+            newColor = zoneColor
+        }
+        if (!/^#[0-9A-Fa-f]{6}$/i.test(newColor)) {
+            alert('Неверный формат цвета. Используйте HEX формат: #RRGGBB');
+            newColor = '#28a745';
+        }
         currentPolygon = new ymaps.Polygon([zoneCoords], {
            hintContent: "Редактирование: " + zoneName
         }, {
-            fillColor: "#2E16B1",
+            fillColor: newColor,
             fillOpacity: 0.3,
-            strokeColor: "#180773",
+            strokeColor: newColor,
             strokeWidth: 3,
             editorDrawingCursor: "crosshair"
         });
@@ -182,6 +190,7 @@
         currentPolygon.editor.startEditing();
         currentPolygon.editingZone = zoneId;
         currentPolygon.editingZoneName = zoneName;
+        currentPolygon.editingZoneColor = newColor;
         currentPolygon.isNewZone = false;
         isEditing = true;
         document.getElementById('newZoneBtn').disabled = true;
@@ -192,7 +201,7 @@
     }
 
     function cancelEditing() {
-        if (currentPolygon) {
+        if (currentPolygon && !isEditing) {
             currentPolygon.editor.stopEditing();
             myMap.geoObjects.remove(currentPolygon);
             currentPolygon = null;
